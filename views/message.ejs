@@ -1,0 +1,86 @@
+<% layout('layout') -%>
+		
+		<span id="msgStat" style="color:green;margin-left:20px;font-weight:bold;"></span>
+		
+<div data-role="fieldcontain" class="ui-field-contain ui-body ">
+<label>Send Single Buzzer</label>
+<input type="button" id="buzzBtn" class="msgBtn" value="Send Buzzer">
+</div>
+
+<h4 style="text-align:center;"> - OR - </h4>
+
+
+<div data-role="fieldcontain" class="ui-field-contain ui-body ">
+
+<label>Enter Custom Message</label>
+	<input type="text" data-clear-btn="true" id="msgText" value="" maxlength="150">
+	<input type="button" id="textBtn" class="msgBtn" value="Send Message"/>
+</div>
+<script type="text/javascript">
+
+	function showLoad(){
+		$('#msgStat').html('Sending...');
+		$( ".msgBtn" ).button('disable');
+		$.mobile.loading( 'show', {
+			text: 'Sending Message',
+			textVisible: true,
+			theme: 'e',
+			html: ""
+		});
+	}
+	
+	function hideLoad(){
+		$( ".msgBtn" ).button('enable');
+		$.mobile.loading( 'hide', {
+			text: '',
+			textVisible: false,
+			theme: 'e',
+			html: ""
+		});
+	}
+
+
+	$( "#buzzBtn" ).bind( "click", function(event, ui) {
+		$('#msgStat').html('Sending...');
+		showLoad();
+		
+		var res = sendBuzz();
+		
+		setTimeout(function(){hideLoad();}, 1000);
+		if(res.err != null){
+			hideLoad(); 
+			$('#msgStat').html('Error: ' + res.err);
+			return;
+		}
+		
+		$('#msgStat').html('Message Sent');
+		
+		setTimeout(function(){$('#msgStat').html('');}, 2000);
+	});
+	
+	$( "#textBtn" ).bind( "click", function(event, ui) {
+		$('#msgStat').html('Sending...');
+		showLoad();
+		var msgText = $('#msgText').val();
+		
+		if(msgText == ''){
+			hideLoad(); 
+			$('#msgStat').html('Empty Message cannot be sent');
+			return;
+		}
+		
+		var res = sendTalk(msgText);
+		
+		setTimeout(function(){hideLoad();}, 1000);
+		
+		if(res.err != null){
+			hideLoad(); 
+			$('#msgStat').html('Error: ' + res.err);
+			return;
+		}
+		
+		$('#msgStat').html('Message Sent');
+		
+		setTimeout(function(){$('#msgStat').html('');}, 2000);
+	});
+</script>
